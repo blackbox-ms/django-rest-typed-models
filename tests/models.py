@@ -1,15 +1,14 @@
 from django.db import models
+from typedmodels.models import TypedModel
 
-from polymorphic.models import PolymorphicModel
 
-
-class BlogBase(PolymorphicModel):
+class BlogBase(TypedModel):
     name = models.CharField(max_length=10)
     slug = models.SlugField(max_length=255, unique=True)
 
 
 class BlogOne(BlogBase):
-    info = models.CharField(max_length=10)
+    info = models.CharField(max_length=10, null=True)
 
 
 class BlogTwo(BlogBase):
@@ -17,8 +16,5 @@ class BlogTwo(BlogBase):
 
 
 class BlogThree(BlogBase):
-    info = models.CharField(max_length=255)
-    about = models.CharField(max_length=255)
-
-    class Meta:
-        unique_together = (('info', 'about'),)
+    about = models.CharField(max_length=255, null=True)
+    

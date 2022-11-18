@@ -13,4 +13,4 @@ comment:
   behavior: default
 
 ignore:
-  - "rest_polymorphic/__version__.py"
+  - "rest_typed_models/__version__.py"

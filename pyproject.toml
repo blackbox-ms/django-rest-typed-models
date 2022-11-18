@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "django-rest-typed-models"
+version = "0.1.0"
+description = "Typed model serializers for Django REST Framework."
+authors = ["Krystof Beuermann <krystof+django@blackbox.ms>"]
+license = "MIT License"
+readme = "README.md"
+packages = [{include = "rest_typed_models"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[tool.poetry.group.codestyle.dependencies]
+flake8 = "3.7.9"
+
+[tool.poetry.group.testing.dependencies]
+pytest = "^7.2.0"
+pytest-django = "^4.5.2"
+pytest-mock = "^3.10.0"
+pytest-cov = "^4.0.0"
+django = "3.2"
+django-typed-models = "^0.12.0"
+djangorestframework = "^3.14.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

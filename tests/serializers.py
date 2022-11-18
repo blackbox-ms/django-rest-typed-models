@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from rest_polymorphic.serializers import PolymorphicSerializer
+from rest_typed_models.serializers import TypedModelSerializer
 
 from tests.models import BlogBase, BlogOne, BlogTwo, BlogThree
 
@@ -33,7 +33,7 @@ class BlogThreeSerializer(serializers.ModelSerializer):
         fields = ('name', 'slug', 'info', 'about')
 
 
-class BlogPolymorphicSerializer(PolymorphicSerializer):
+class BlogTypedModelSerializer(TypedModelSerializer):
     model_serializer_mapping = {
         BlogBase: BlogBaseSerializer,
         BlogOne: BlogOneSerializer,

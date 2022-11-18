@@ -7,28 +7,21 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 
 
-class PolymorphicSerializer(serializers.Serializer):
+class TypedModelSerializer(serializers.Serializer):
     model_serializer_mapping = None
-    resource_type_field_name = 'resourcetype'
+    resource_type_field_name = "type"
 
     def __new__(cls, *args, **kwargs):
         if cls.model_serializer_mapping is None:
             raise ImproperlyConfigured(
-                '`{cls}` is missing a '
-                '`{cls}.model_serializer_mapping` attribute'.format(
-                    cls=cls.__name__
-                )
+                "`{cls}` is missing a " "`{cls}.model_serializer_mapping` attribute".format(cls=cls.__name__)
             )
         if not isinstance(cls.resource_type_field_name, string_types):
-            raise ImproperlyConfigured(
-                '`{cls}.resource_type_field_name` must be a string'.format(
-                    cls=cls.__name__
-                )
-            )
-        return super(PolymorphicSerializer, cls).__new__(cls, *args, **kwargs)
+            raise ImproperlyConfigured("`{cls}.resource_type_field_name` must be a string".format(cls=cls.__name__))
+        return super(TypedModelSerializer, cls).__new__(cls, *args, **kwargs)
 
     def __init__(self, *args, **kwargs):
-        super(PolymorphicSerializer, self).__init__(*args, **kwargs)
+        super(TypedModelSerializer, self).__init__(*args, **kwargs)
 
         model_serializer_mapping = self.model_serializer_mapping
         self.model_serializer_mapping = {}
@@ -47,7 +40,10 @@ class PolymorphicSerializer(serializers.Serializer):
     # Public API
 
     def to_resource_type(self, model_or_instance):
-        return model_or_instance._meta.object_name
+        opts = model_or_instance._meta
+        model_name = opts.model_name
+        typed_model_type = "%s.%s" % (opts.app_label, model_name)
+        return typed_model_type
 
     def to_representation(self, instance):
         if isinstance(instance, Mapping):
@@ -84,7 +80,7 @@ class PolymorphicSerializer(serializers.Serializer):
         return serializer.update(instance, validated_data)
 
     def is_valid(self, *args, **kwargs):
-        valid = super(PolymorphicSerializer, self).is_valid(*args, **kwargs)
+        valid = super(TypedModelSerializer, self).is_valid(*args, **kwargs)
         try:
             if self.partial and self.instance:
                 resource_type = self.to_resource_type(self.instance)
@@ -116,17 +112,17 @@ class PolymorphicSerializer(serializers.Serializer):
     # Implementation
 
     def _to_model(self, model_or_instance):
-        return (model_or_instance.__class__
-                if isinstance(model_or_instance, models.Model)
-                else model_or_instance)
+        return model_or_instance.__class__ if isinstance(model_or_instance, models.Model) else model_or_instance
 
     def _get_resource_type_from_mapping(self, mapping):
         try:
             return mapping[self.resource_type_field_name]
         except KeyError:
-            raise serializers.ValidationError({
-                self.resource_type_field_name: 'This field is required',
-            })
+            raise serializers.ValidationError(
+                {
+                    self.resource_type_field_name: "This field is required",
+                }
+            )
 
     def _get_serializer_from_model_or_instance(self, model_or_instance):
         model = self._to_model(model_or_instance)
@@ -136,21 +132,17 @@ class PolymorphicSerializer(serializers.Serializer):
                 return self.model_serializer_mapping[klass]
 
         raise KeyError(
-            '`{cls}.model_serializer_mapping` is missing '
-            'a corresponding serializer for `{model}` model'.format(
-                cls=self.__class__.__name__,
-                model=model.__name__
-            )
+            "`{cls}.model_serializer_mapping` is missing "
+            "a corresponding serializer for `{model}` model".format(cls=self.__class__.__name__, model=model.__name__)
         )
 
     def _get_serializer_from_resource_type(self, resource_type):
         try:
+            # get model of the serializer self
             model = self.resource_type_model_mapping[resource_type]
         except KeyError:
-            raise serializers.ValidationError({
-                self.resource_type_field_name: 'Invalid {0}'.format(
-                    self.resource_type_field_name
-                )
-            })
+            raise serializers.ValidationError(
+                {self.resource_type_field_name: "Invalid {0}".format(self.resource_type_field_name)}
+            )
 
         return self._get_serializer_from_model_or_instance(model)

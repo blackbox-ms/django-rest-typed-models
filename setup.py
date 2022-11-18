@@ -16,7 +16,7 @@ with io.open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 about = {}
 # Get meta-data from __version__.py
-with open(os.path.join(here, 'rest_polymorphic', '__version__.py')) as f:
+with open(os.path.join(here, 'rest_typed_models', '__version__.py')) as f:
     exec(f.read(), about)
 
 
@@ -65,12 +65,12 @@ setup(
     url=about['__url__'],
     license=about['__license__'],
     packages=[
-        'rest_polymorphic',
+        'rest_typed_models',
     ],
     install_requires=[
         'django',
         'djangorestframework',
-        'django-polymorphic',
+        'django-typed-models',
         'six',
     ],
     classifiers=[

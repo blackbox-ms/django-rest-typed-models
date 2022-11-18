@@ -21,8 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sites',
-
-    'rest_polymorphic',
+    
+    'rest_typed_models',
     'tests',
 ]
 

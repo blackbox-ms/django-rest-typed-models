@@ -1,4 +1,8 @@
--e .
--r requirements/codestyle.txt
--r requirements/packaging.txt
--r requirements/testing.txt
+flake8==3.7.9
+# Twine for secured PyPI uploads.
+twine==3.1.1
+#testing
+pytest==5.4.1
+pytest-django==3.9.0
+pytest-mock==3.0.0
+pytest-cov==2.8.1
